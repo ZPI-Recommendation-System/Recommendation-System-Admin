@@ -25,20 +25,21 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
 import Divider from '@mui/material/Divider';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 
-function job(item) {
+function job([name, description]) {
     return <Paper variant="outlined" p={1} elevation={0} >
-        <Grid alignItems="start" container>
+        <Grid alignItems="center"  container>
             
-            <Grid xs={8}> <Typography p={1} variant="h5" component="div">
-        {item}
+            <Grid xs={8}> <Typography pt={1} variant="h5" component="div">
+        {name}
       </Typography> 
-      <Typography component="div" p={1}>
-        {item} does the thing
+      <Typography component="div" pb={2}>
+        {description}
       </Typography>
             </Grid>
             <Grid xs={4}>
-                    <Button variant="outlined" startIcon={<VisibilityIcon />}>
+                    <Button variant="outlined" startIcon={<KeyboardDoubleArrowRightIcon />}>
                         Run
                     </Button>
             </Grid>
@@ -54,7 +55,10 @@ function Jobs() {
         pl: 2,
       },
     }}
-  >{["Scraper", "ML Learn", "ML run", "Clear"].map(job)}</Box>;
+  >{[["Scraper", "Scrapes data from allegro API"], 
+  ["ML Learn", "Train ML model on collected laptops data"], 
+  ["ML LAbel", "Run ML model on missing price values"], 
+  ["Clear DB", "Clear the entire database"]].map(job)}</Box>;
 }
 
 export default Jobs;
