@@ -19,55 +19,42 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
+import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
+import Divider from '@mui/material/Divider';
 
-
-import Moderate from './Moderate';
-import Jobs from './Jobs';
-
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
-
-function App() {
-  return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-    <Box>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" pr={3} >
-            Strona Administratora
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
-          <MenuItem >
-                  <Typography textAlign="center">Run Jobs</Typography>
-          </MenuItem>
-          <MenuItem >
-                  <Typography textAlign="center">Moderate Laptops</Typography>
-          </MenuItem>
-          </Stack>
-
-          <MenuItem >
-                  <Typography textAlign="center">Log Out</Typography>
-          </MenuItem>
-        </Toolbar>
-      </AppBar>
-      <Container >
-
-    <Jobs />
-      </Container>
-    </Box>
-    </ThemeProvider>
-  );
+function job(item) {
+    return <Paper variant="outlined" p={1} elevation={0} >
+        <Grid alignItems="start" container>
+            
+            <Grid xs={8}> <Typography p={1} variant="h5" component="div">
+        {item}
+      </Typography> 
+      <Typography component="div" p={1}>
+        {item} does the thing
+      </Typography>
+            </Grid>
+            <Grid xs={4}>
+                    <Button variant="outlined" startIcon={<VisibilityIcon />}>
+                        Run
+                    </Button>
+            </Grid>
+        </Grid>
+    </Paper>
 }
 
-export default App;
+function Jobs() {
+    return  <Box
+    sx={{
+      '& > :not(style)': {
+        m: 1,
+        pl: 2,
+      },
+    }}
+  >{["Scraper", "ML Learn", "ML run", "Clear"].map(job)}</Box>;
+}
+
+export default Jobs;
