@@ -25,6 +25,10 @@ import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
 
 
+import { Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+
 import Moderate from './Moderate';
 import Jobs from './Jobs';
 
@@ -48,11 +52,13 @@ function App() {
             Strona Administratora
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
-          <MenuItem >
-                  <Typography textAlign="center">Run Jobs</Typography>
+          
+          <MenuItem  component={Link} to="/moderate">
+          
+                  <Typography  textAlign="center">Moderate Laptops</Typography>
           </MenuItem>
-          <MenuItem >
-                  <Typography textAlign="center">Moderate Laptops</Typography>
+          <MenuItem component={Link} to="/jobs">
+                  <Typography  textAlign="center">Run Jobs</Typography>
           </MenuItem>
           </Stack>
 
@@ -63,7 +69,13 @@ function App() {
       </AppBar>
       <Container >
 
-    <Jobs />
+      <Routes>
+            <Route path={"/jobs"} element={
+              <Jobs />} />
+              <Route path={"/moderate"} element={
+                <Moderate />} />
+        </Routes>
+
       </Container>
     </Box>
     </ThemeProvider>

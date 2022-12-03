@@ -57,7 +57,7 @@ function Jobs() {
     }}
   >{[["Scraper", "Scrapes data from allegro API"], 
   ["ML Learn", "Train ML model on collected laptops data"], 
-  ["ML LAbel", "Run ML model on missing price values"], 
+  ["ML Label", "Run ML model on missing price values"], 
   ["Clear DB", "Clear the entire database"]].map(job)}</Box>;
 }
 
