@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloseIcon from '@mui/icons-material/Close';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 import * as React from 'react';
@@ -28,15 +29,15 @@ import Chip from '@mui/material/Chip';
 import { useState, useEffect } from 'react';
 import { useRequest, API_URL } from './api';
 
-function laptop(item, setEdited) {
+function laptop(item, edited, setEdited) {
     return <ListItem
         key={item.id}
-        sx={{ backgroundColor: "#222", width: "100%" }}
+        sx={{ backgroundColor: edited===item.id ? "#333" : "#222", width: "100%", paddingBottom: "0.25em" }}
         disablePadding
         >
-        <Stack>
+        <Stack  spacing={1}>
             <Grid alignItems="center" container>
-                <Grid container xs={4}>
+                <Grid container xs={3}>
                     <img
                         width={"100%"}
                         src={item.images[0]?.url}
@@ -44,10 +45,8 @@ function laptop(item, setEdited) {
                         loading="lazy"
                     />
                 </Grid>
-                <Grid xs={8}>
-                    <ListItemButton>
+                <Grid xs={9}>
                         <ListItemText primary={item.name} />
-                    </ListItemButton>
                 </Grid>
             </Grid>
             <Stack direction="row">
@@ -59,7 +58,7 @@ function laptop(item, setEdited) {
     </ListItem>
 }
 
-function LaptopsList({setEdited}) {
+function LaptopsList({setEdited, edited}) {
 
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -97,9 +96,34 @@ function LaptopsList({setEdited}) {
             </Stack>
         </Box>
             <List>
-                {result["result"].map(item=>laptop(item, setEdited))}
+                {result["result"].map(item=>laptop(item, edited, setEdited))}
             </List></>
     }
+}
+
+function LaptopImage({ url, onDelete }) {
+    const [deleted, setDeleted] = useState(false)
+
+    return <ImageListItem sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        }}
+        onClick={() => setDeleted(!deleted)}
+        >
+        <DeleteIcon sx={{
+            position: "absolute",
+            width: "50%",
+            height: "50%",
+            display: !deleted ? "none" : "block",
+        }} />
+        <img
+            style={deleted ? {opacity:0.2} : {}}
+            src={url}
+            alt={"Laptop"}
+            loading="lazy"
+        />
+    </ImageListItem>   
 }
 
 function Editor({id}) {
@@ -112,17 +136,12 @@ function Editor({id}) {
     } else {
         return <>
         <ImageList cols={4}>
-            {result.result.images.map((item) => (
-                <ImageListItem
-                    key={item.id}>
-                    <img
-                        src={item.url}
-                        alt={"Laptop"}
-                        loading="lazy"
-                    />
-                </ImageListItem>
+            {result.result.images.map(item => (
+                <LaptopImage key={item.url} url={item.url} onDelete={()=>{}} />
             ))}
         </ImageList>
+        <p>Click on inappropriate images to mark them for deletion.</p>
+        <Button variant="outlined" sx={{marginBottom:"2em"}} >Apply Changes</Button>
 
         <Stack spacing={2}  >
             {Object.entries(result.result)
@@ -141,10 +160,10 @@ function Moderate() {
 
     return <Grid container spacing={2}>
         <Grid xs={4}>
-            <LaptopsList setEdited={setEditedId} />
+            <LaptopsList edited={editedId} setEdited={setEditedId} />
         </Grid>
         <Grid xs={8}>
-            {editedId ? <Editor id={editedId} /> : <p className="text">Select laptop to edit</p>}
+            {editedId ? <Editor id={editedId} /> : <p style={{marginTop:"2.8em", marginLeft: "0.5em"}} className="text">Select laptop to edit</p>}
         </Grid>
     </Grid>
 
