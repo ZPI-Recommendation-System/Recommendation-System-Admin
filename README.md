@@ -3,7 +3,11 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Laptop moderation
 ![screenshot](./media/screenshot.png)
+
+Running jobs
+![screenshot-jobs](./media/screenshot-jobs.png)
 
 ## Available Scripts
 

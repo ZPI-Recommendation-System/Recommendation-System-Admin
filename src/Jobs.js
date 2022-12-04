@@ -18,6 +18,7 @@ import MenuItem from '@mui/material/MenuItem';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
@@ -45,10 +46,14 @@ function job([name, description, lastStatus]) {
       </Typography>
             </Grid>
             <Grid xs={4}>
-              
-                    <Button variant="outlined" startIcon={<KeyboardDoubleArrowRightIcon />}>
-                    {lastStatus ?  "Rerun": "Run"}
-                    </Button>
+                {lastStatus ==="running"
+                 ? <Button disabled variant="outlined" startIcon={<CircularProgress size="0.6em" color="inherit" />}>
+                  Running
+                 </Button>
+                 : <Button variant="outlined" startIcon={<KeyboardDoubleArrowRightIcon />}>
+                 {lastStatus ?  "Rerun": "Run"}
+                 </Button>
+                }
             </Grid>
         </Grid>
     </Paper>
@@ -63,7 +68,7 @@ function Jobs() {
       },
     }}
   >{[["Scraper", "Scrapes data from allegro API", "success"], 
-  ["ML Learn", "Train ML model on collected laptops data", "success"], 
+  ["ML Learn", "Train ML model on collected laptops data", "running"], 
   ["ML Label", "Run ML model on missing price values", "failed"], 
   ["Clear DB", "Clear the entire database", ""]].map(job)}</Box>;
 }
