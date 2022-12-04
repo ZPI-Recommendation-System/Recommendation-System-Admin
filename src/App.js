@@ -49,7 +49,7 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" pr={3} >
-            Strona Administratora
+            Admin Panel
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
           
