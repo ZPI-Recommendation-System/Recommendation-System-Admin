@@ -8,9 +8,9 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import { API_URL } from './api.js';
+import { API_URL } from '../api.js';
 import { useState, useEffect } from 'react';
-import AllegroKeyModal from './AllegroKeyModal';
+import AllegroKeyModal from '../AllegroKeyModal';
 
 
 function Jobs() {

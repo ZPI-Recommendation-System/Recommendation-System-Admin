@@ -13,8 +13,8 @@ import { Link } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 
 
-import Moderate from './Moderate';
-import Jobs from './Jobs';
+import Moderate from './pages/moderation/Moderate';
+import Jobs from './pages/Jobs';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
