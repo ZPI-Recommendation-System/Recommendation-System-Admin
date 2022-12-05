@@ -16,10 +16,10 @@ import { useRequest, API_URL } from '../../api';
 function laptop(item, edited, setEdited) {
     return <ListItem
         key={item.id}
-        sx={{ backgroundColor: edited===item.id ? "#333" : "#222", width: "100%", paddingBottom: "0.25em" }}
+        sx={{ backgroundColor: edited === item.id ? "#333" : "#222", width: "100%", paddingBottom: "0.25em" }}
         disablePadding
-        >
-        <Stack  spacing={1}>
+    >
+        <Stack spacing={1}>
             <Grid alignItems="center" container>
                 <Grid container xs={3}>
                     <img
@@ -30,19 +30,19 @@ function laptop(item, edited, setEdited) {
                     />
                 </Grid>
                 <Grid xs={9}>
-                        <ListItemText primary={item.name} />
+                    <ListItemText primary={item.name} />
                 </Grid>
             </Grid>
             <Stack direction="row">
                 <Chip clickable variant="outlined" label="Delete" icon={<DeleteIcon />} />
                 <Chip clickable variant="outlined" label="Mark as seen" icon={<VisibilityIcon />} />
-                <Chip clickable variant="outlined" label="Edit" icon={<VisibilityIcon />} onClick={()=>setEdited(item.id)} />
+                <Chip clickable variant="outlined" label="Edit" icon={<VisibilityIcon />} onClick={() => setEdited(item.id)} />
             </Stack>
         </Stack>
     </ListItem>
 }
 
-export default function LaptopsList({setEdited, edited}) {
+export default function LaptopsList({ setEdited, edited }) {
 
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -79,8 +79,8 @@ export default function LaptopsList({setEdited, edited}) {
                 <Chip clickable variant="outlined" label="Unseen" icon={<VisibilityIcon />} />
             </Stack>
         </Box>
-            <List>
-                {result["result"].map(item=>laptop(item, edited, setEdited))}
+                <List sx={{ height: "70vh", overflowY:"scroll", overflowX:"hidden" }}>
+                {result["result"].map(item => laptop(item, edited, setEdited))}
             </List></>
     }
 }

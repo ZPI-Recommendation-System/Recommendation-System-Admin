@@ -97,7 +97,7 @@ export default function Editor({id}) {
         return <p className="text">Loading...</p>
     } else {
         return <>
-        <ImageList cols={4}>
+        <ImageList cols={6}>
             {result.result.images.map(item => (
                 <LaptopImage key={item.url} url={item.url} setDeleted={()=>setDeleted(item.id)}
                     deleted={deletedImages[item.id]} />
