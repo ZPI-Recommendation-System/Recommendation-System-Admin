@@ -2,6 +2,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import { alpha, styled } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -28,6 +29,8 @@ import Divider from '@mui/material/Divider';
 import Chip from '@mui/material/Chip';
 import { useState, useEffect } from 'react';
 import { useRequest, API_URL } from './api';
+
+const changeColor = '#555533'
 
 function laptop(item, edited, setEdited) {
     return <ListItem
@@ -101,20 +104,24 @@ function LaptopsList({setEdited, edited}) {
     }
 }
 
-function LaptopImage({ url, onDelete }) {
-    const [deleted, setDeleted] = useState(false)
+function LaptopImage({ url, deleted, setDeleted }) {
 
     return <ImageListItem sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        border: deleted ? "2px solid "+changeColor : "none",
+        borderRadius: "2px",
         }}
-        onClick={() => setDeleted(!deleted)}
+        onClick={() => {
+            setDeleted(!deleted)
+        }}
         >
         <DeleteIcon sx={{
             position: "absolute",
             width: "50%",
             height: "50%",
+            color: changeColor,
             display: !deleted ? "none" : "block",
         }} />
         <img
@@ -126,8 +133,56 @@ function LaptopImage({ url, onDelete }) {
     </ImageListItem>   
 }
 
+const ValidationTextField = styled(TextField)((props) => (
+    props.edited ? {
+    '& input + fieldset': {
+      borderColor: changeColor,
+      borderWidth: 2,
+    },
+    '& label': {
+      color: changeColor,
+    }
+  } : {}
+  ));
+
 function Editor({id}) {
     const [isLoaded, result, error] = useRequest(`${API_URL}/laptops/get/${id}?query=all`)
+
+    const [deletedImages, setDeletedImages] = useState({});
+    function setDeleted(id) {
+        setDeletedImages({...deletedImages, [id]: !deletedImages[id]})
+    }
+    const undeletedImages = React.useMemo(
+        () => result?.result?.images.filter(image => !deletedImages[image.id])
+    , [deletedImages, result])
+
+    const [editedFields, setEditedFields] = useState({});
+    function fieldSetter(field) {
+        return e => {
+            setEditedFields({...editedFields, [field]: e.target.value})
+        }
+    }
+
+    function applyChanges() {
+        const patch = {
+            ...editedFields,
+            images: undeletedImages.map(image => image.id)
+        }
+        console.log("Applying changes", id, patch)
+
+        fetch(`${API_URL}/laptops-crud/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(patch)
+        })
+    }
+
+    useEffect(() => {
+        console.log(undeletedImages)
+    }, [deletedImages, undeletedImages])
+
     if (error) {
         return <p className="text">Error: {error.message}</p>
     }
@@ -137,18 +192,22 @@ function Editor({id}) {
         return <>
         <ImageList cols={4}>
             {result.result.images.map(item => (
-                <LaptopImage key={item.url} url={item.url} onDelete={()=>{}} />
+                <LaptopImage key={item.url} url={item.url} setDeleted={()=>setDeleted(item.id)}
+                    deleted={deletedImages[item.id]} />
             ))}
         </ImageList>
         <p>Click on inappropriate images to mark them for deletion.</p>
-        <Button variant="outlined" sx={{marginBottom:"2em"}} >Apply Changes</Button>
+        <Button onClick={applyChanges} variant="outlined" color="warning" sx={{borderColor:changeColor, color: changeColor, marginBottom:"2em"}} >Apply All Changes</Button>
 
         <Stack spacing={2}  >
             {Object.entries(result.result)
                 // .filter(([key, value]) => typeof (value) == "string")
                 .map(([key, value])=>[key, typeof (value) == "string" ? value : JSON.stringify(value)])
                 .map(([key, value]) => (
-                    <TextField fullWidth={true} id={key} label={key} variant="outlined" value={value} />
+                    <ValidationTextField edited={editedFields[key] !==undefined}  
+                    fullWidth={true} id={key} label={key} variant="outlined"
+                     value={editedFields[key]!==undefined ? editedFields[key] : value} 
+                     onChange={fieldSetter(key)} />
                 ))}
         </Stack></> 
 
@@ -162,8 +221,10 @@ function Moderate() {
         <Grid xs={4}>
             <LaptopsList edited={editedId} setEdited={setEditedId} />
         </Grid>
-        <Grid xs={8}>
-            {editedId ? <Editor id={editedId} /> : <p style={{marginTop:"2.8em", marginLeft: "0.5em"}} className="text">Select laptop to edit</p>}
+        <Grid xs={8} >
+            <div style={{marginTop:"2.5em", marginLeft: "0.5em"}}>
+            {editedId ? <Editor id={editedId} /> : <p  className="text">Select laptop to edit</p>}
+            </div>
         </Grid>
     </Grid>
 
