@@ -80,7 +80,7 @@ export default function LaptopsList({ setEdited, edited }) {
             </Stack>
         </Box>
                 <List sx={{ height: "70vh", overflowY:"scroll", overflowX:"hidden" }}>
-                {result["result"].map(item => laptop(item, edited, setEdited))}
+                {result["items"].map(item => laptop(item, edited, setEdited))}
             </List></>
     }
 }

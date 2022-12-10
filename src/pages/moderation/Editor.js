@@ -53,17 +53,18 @@ const ValidationTextField = styled(TextField)((props) => (
   ));
 
 export default function Editor({id}) {
-    const [isLoaded, result, error] = useRequest(`${API_URL}/laptops/get/${id}?query=all`)
-
+    const [isLoaded, result, error] = useRequest(`${API_URL}/laptops?query=all&ids=${id}`)
     const [deletedImages, setDeletedImages] = useState({});
     function setDeleted(id) {
         setDeletedImages({...deletedImages, [id]: !deletedImages[id]})
     }
     const undeletedImages = React.useMemo(
-        () => result?.result?.images.filter(image => !deletedImages[image.id])
-    , [deletedImages, result])
+        () => isLoaded ? result?.items[0]?.images?.filter(image => !deletedImages[image.id]) : []
+    , [deletedImages, result, isLoaded])
 
     const [editedFields, setEditedFields] = useState({});
+    useEffect(() => setEditedFields({}), [id])
+
     function fieldSetter(field) {
         return e => {
             setEditedFields({...editedFields, [field]: e.target.value})
@@ -79,11 +80,15 @@ export default function Editor({id}) {
 
         fetch(`${API_URL}/laptops-crud/${id}`, {
             method: 'PATCH',
+            withCredentials: true,
+            credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                //TODO add proper token
+                'Authorization': 'Bearer 5335cac0-65dd-4a91-b51c-19bbd4341d0f'
             },
             body: JSON.stringify(patch)
-        })
+        }).then((x) => console.log(x))
     }
 
     useEffect(() => {
@@ -98,7 +103,7 @@ export default function Editor({id}) {
     } else {
         return <>
         <ImageList cols={6}>
-            {result.result.images.map(item => (
+            {result.items[0].images.map(item => (
                 <LaptopImage key={item.url} url={item.url} setDeleted={()=>setDeleted(item.id)}
                     deleted={deletedImages[item.id]} />
             ))}
@@ -107,7 +112,7 @@ export default function Editor({id}) {
         <Button onClick={applyChanges} variant="outlined" color="warning" sx={{borderColor:changeColor, color: changeColor, marginBottom:"2em"}} >Apply All Changes</Button>
 
         <Stack spacing={2}  >
-            {Object.entries(result.result)
+            {Object.entries(result.items[0])
                 // .filter(([key, value]) => typeof (value) == "string")
                 .map(([key, value])=>[key, typeof (value) == "string" ? value : JSON.stringify(value)])
                 .map(([key, value]) => (
