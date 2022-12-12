@@ -11,11 +11,12 @@ import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArro
 import { API_URL } from '../api.js';
 import { useState, useEffect } from 'react';
 import AllegroKeyModal from '../AllegroKeyModal';
-
+import useLoginRedirect from '../useLoginRedirect';
 
 function Jobs({token}) {
   const [allegroURL, setAllegroURL] = useState(null);
 
+  useLoginRedirect(token);
 
   function returnKey(key) {
     setAllegroURL(null)
@@ -42,7 +43,7 @@ function Jobs({token}) {
       new Job("ML Learn", "Train ML model on collected laptops data"),
       new Job("ML Label", "Run ML model on missing price values"),
       new Job("Clear DB", "Clear the entire database")]
-        .map(job => <JobLine setAllegroURL={setAllegroURL} job={job}></JobLine>)}</Box>;
+        .map(job => <JobLine key={job.name} setAllegroURL={setAllegroURL} job={job}></JobLine>)}</Box>;
 }
 
 function JobLine({ job, setAllegroURL }) {
@@ -63,7 +64,7 @@ function JobLine({ job, setAllegroURL }) {
     return () => clearInterval(interval);
   });
 
-  return <Paper variant="outlined" p={1} elevation={0} x >
+  return <Paper variant="outlined" p={1} elevation={0} >
     <Grid alignItems="center" container>
       <Grid xs={8}> <Typography pt={1} variant="h5" component="div">
         {job.name}

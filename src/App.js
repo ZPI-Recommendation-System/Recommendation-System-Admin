@@ -49,7 +49,7 @@ function App() {
           </Stack>
 
           <MenuItem >
-                  <Typography textAlign="center">Log Out</Typography>
+                  <Typography textAlign="center" onClick={()=>setToken(null)}>Log Out</Typography>
           </MenuItem>
         </Toolbar>
       </AppBar>
@@ -58,6 +58,8 @@ function App() {
       <Routes>
             <Route path={"/"} element={
               <Login token={token} setToken={setToken} />} />
+              <Route path={"/login"} element={
+                <Login token={token} setToken={setToken} />} />
             <Route path={"/jobs"} element={
               <Jobs token={token} />} />
               <Route path={"/moderate"} element={

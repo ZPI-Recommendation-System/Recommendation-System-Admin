@@ -10,7 +10,7 @@ import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import { useRequest, API_URL } from '../../api';
 
-const changeColor = '#555533'
+const changeColor = '#888855'
 
 function LaptopImage({ url, deleted, setDeleted }) {
 
