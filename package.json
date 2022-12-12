@@ -40,6 +40,5 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "./",
-  "publicPath": "./"
+  "homepage": "./admin"
 }
