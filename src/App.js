@@ -15,6 +15,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Moderate from './pages/moderation/Moderate';
 import Jobs from './pages/Jobs';
+import Login from './pages/Login';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -26,6 +27,7 @@ const darkTheme = createTheme({
 });
 
 function App() {
+  const [token, setToken] = React.useState(null);
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -54,10 +56,12 @@ function App() {
       <Container >
 
       <Routes>
+            <Route path={"/"} element={
+              <Login token={token} setToken={setToken} />} />
             <Route path={"/jobs"} element={
-              <Jobs />} />
+              <Jobs token={token} />} />
               <Route path={"/moderate"} element={
-                <Moderate />} />
+                <Moderate token={token} />} />
         </Routes>
 
       </Container>

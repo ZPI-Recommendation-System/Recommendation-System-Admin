@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react';
 import AllegroKeyModal from '../AllegroKeyModal';
 
 
-function Jobs() {
+function Jobs({token}) {
   const [allegroURL, setAllegroURL] = useState(null);
 
 
