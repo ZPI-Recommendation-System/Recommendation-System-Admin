@@ -7,10 +7,12 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import _ from 'lodash';
 
 import * as React from 'react';
 import Chip from '@mui/material/Chip';
-import { useState, useEffect } from 'react';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useState, useRef, useEffect } from 'react';
 import { useRequest, API_URL } from '../../api';
 
 function laptop(item, edited, setEdited) {
@@ -58,7 +60,26 @@ export default function LaptopsList({ setEdited, edited }) {
         return () => clearTimeout(delayDebounceFn)
     }, [searchTerm])
 
-    const [isLoaded, result, error] = useRequest(API_URL + "/laptops/search?query=id,name,images&limit=10&search=" + sentSearchTerm)
+    const [page, setPage] = useState(0);
+    const pageItems = useRef([]);
+    useEffect(() => {
+        console.log("Results reset")
+        setPage(0);
+        pageItems.current = [];
+    }, [searchTerm]);
+
+    function loadMore() {
+        setPage(page+1);
+    }
+
+    const limit = 20;
+    
+    function flatPageItems() {
+        // uniqBy is needed for the React key prop correctness
+        return _.uniqBy(_.flatten(pageItems.current), "id");
+    }
+
+    const [isLoaded, result, error] = useRequest(API_URL + `/laptops/search?query=id,name,images&limit=${limit}&search=${sentSearchTerm}&page=${page}`)
 
     if (error) {
         return <p className="text">Error: {error.message}</p>
@@ -66,7 +87,10 @@ export default function LaptopsList({ setEdited, edited }) {
     else if (!isLoaded) {
         return <p className="text">Loading...</p>
     } else {
-
+        const currentPageItems = result["items"];
+        pageItems.current[page] = currentPageItems;
+        
+        const showMoreButton = currentPageItems.length >= limit;
         return <><Box mt={5}>
             <Stack
                 direction={{ xs: 'column', sm: 'row' }}
@@ -80,7 +104,8 @@ export default function LaptopsList({ setEdited, edited }) {
             </Stack>
         </Box>
                 <List sx={{ height: "70vh", overflowY:"scroll", overflowX:"hidden" }}>
-                {result["items"].map(item => laptop(item, edited, setEdited))}
+                {flatPageItems().map(item => laptop(item, edited, setEdited))}
+                {showMoreButton && <Chip sx={{marginTop:"0.5em"}} clickable variant="filled" label="Load more" icon={<MoreHorizIcon/>} onClick={loadMore} />}
             </List></>
     }
 }
