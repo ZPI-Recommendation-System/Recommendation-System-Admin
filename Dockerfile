@@ -3,6 +3,8 @@ FROM node:18 as build
 WORKDIR /app
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL $REACT_APP_API_URL
+ARG PUBLIC_URL
+ENV PUBLIC_URL $PUBLIC_URL
 ENV PATH /app/node_modules/.bin:$PATH
 COPY ./package.json /app/
 COPY ./package-lock.json /app/
