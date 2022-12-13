@@ -47,10 +47,9 @@ function App() {
                   <Typography  textAlign="center">Run Jobs</Typography>
           </MenuItem>
           </Stack>
-
-          <MenuItem >
-                  <Typography textAlign="center" onClick={()=>setToken(null)}>Log Out</Typography>
-          </MenuItem>
+          {token && <MenuItem >
+            <Typography textAlign="center" onClick={()=>setToken(null)}>Log Out</Typography>
+          </MenuItem>}
         </Toolbar>
       </AppBar>
       <Container >
