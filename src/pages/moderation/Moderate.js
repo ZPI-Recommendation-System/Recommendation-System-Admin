@@ -4,14 +4,13 @@ import * as React from 'react';
 import {useState} from 'react';
 import Editor from './Editor';
 import LaptopsList from './LaptopsList';
-import {Redirect} from "react-router-dom";
+import useLoginRedirect from '../../useLoginRedirect';
 
 function Moderate({token}) {
     const [editedId, setEditedId] = useState(null)
     const [seed, setSeed] = useState(1)
 
-    if(!token)
-        return <Redirect to={"/login"}/>
+    useLoginRedirect(token);
 
     return <Grid container spacing={2}>
         <Grid xs={4}>

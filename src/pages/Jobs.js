@@ -11,9 +11,10 @@ import Button from '@mui/material/Button';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import {API_URL} from '../api.js';
 import AllegroKeyModal from '../AllegroKeyModal';
-import {Redirect} from "react-router-dom";
+import useLoginRedirect from '../useLoginRedirect';
 
 function Jobs({token}) {
+  useLoginRedirect(token);
 
   const [allegroURL, setAllegroURL] = useState(null);
   const [runningJob, setRunningJob] = useState(undefined);
@@ -22,9 +23,6 @@ function Jobs({token}) {
     new Job("ML Learn", "Train ML model on collected laptops data", token),
     new Job("ML Label", "Run ML model on missing price values", token),
     new Job("Clear DB", "Clear the entire database", token)]
-
-  if(!token)
-    return <Redirect to={"/login"}/>
 
   return <Box
       sx={{
