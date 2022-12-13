@@ -52,14 +52,18 @@ const ValidationTextField = styled(TextField)((props) => (
   } : {}
   ));
 
-export default function Editor({id}) {
-    const [isLoaded, result, error] = useRequest(`${API_URL}/laptops?query=all&ids=${id}`)
+export default function Editor({id, token, setSeed}) {
+    const [isLoaded, result, error] = useRequest(`${API_URL}/laptops-crud/${id}`, {method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
+    })
     const [deletedImages, setDeletedImages] = useState({});
     function setDeleted(id) {
         setDeletedImages({...deletedImages, [id]: !deletedImages[id]})
     }
     const undeletedImages = React.useMemo(
-        () => isLoaded ? result?.items[0]?.images?.filter(image => !deletedImages[image.id]) : []
+        () => isLoaded ? result?.images?.filter(image => !deletedImages[image.id]) : []
     , [deletedImages, result, isLoaded])
 
     const [editedFields, setEditedFields] = useState({});
@@ -71,24 +75,26 @@ export default function Editor({id}) {
         }
     }
 
+    console.log(result)
+
     function applyChanges() {
         const patch = {
+            ...result,
             ...editedFields,
-            images: undeletedImages.map(image => image.id)
+            images: undeletedImages,
         }
         console.log("Applying changes", id, patch)
 
         fetch(`${API_URL}/laptops-crud/${id}`, {
             method: 'PATCH',
-            withCredentials: true,
-            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                //TODO add proper token
-                'Authorization': 'Bearer 5335cac0-65dd-4a91-b51c-19bbd4341d0f'
+                'Authorization': 'Bearer ' + token
             },
             body: JSON.stringify(patch)
         }).then((x) => console.log(x))
+
+        setSeed(Math.random())
     }
 
     useEffect(() => {
@@ -103,7 +109,7 @@ export default function Editor({id}) {
     } else {
         return <>
         <ImageList cols={6}>
-            {result.items[0].images.map(item => (
+            {result.images.map(item => (
                 <LaptopImage key={item.url} url={item.url} setDeleted={()=>setDeleted(item.id)}
                     deleted={deletedImages[item.id]} />
             ))}
@@ -112,7 +118,7 @@ export default function Editor({id}) {
         <Button onClick={applyChanges} variant="outlined" color="warning" sx={{borderColor:changeColor, color: changeColor, marginBottom:"2em"}} >Apply All Changes</Button>
 
         <Stack spacing={2}  >
-            {Object.entries(result.items[0])
+            {Object.entries(result)
                 // .filter(([key, value]) => typeof (value) == "string")
                 .map(([key, value])=>[key, typeof (value) == "string" ? value : JSON.stringify(value)])
                 .map(([key, value]) => (

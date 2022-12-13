@@ -15,7 +15,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useState, useRef, useEffect } from 'react';
 import { useRequest, API_URL } from '../../api';
 
-function laptop(item, edited, setEdited) {
+function Laptop(item, edited, setEdited, token, deleteItem) {
     return <ListItem
         key={item.id}
         sx={{ backgroundColor: edited === item.id ? "#333" : "#222", width: "100%", paddingBottom: "0.25em" }}
@@ -36,15 +36,15 @@ function laptop(item, edited, setEdited) {
                 </Grid>
             </Grid>
             <Stack direction="row">
-                <Chip clickable variant="outlined" label="Delete" icon={<DeleteIcon />} />
-                <Chip clickable variant="outlined" label="Mark as seen" icon={<VisibilityIcon />} />
+                <Chip clickable variant="outlined" label="Delete" icon={<DeleteIcon />} onClick={() => deleteItem(item.id)} />
+                {/*<Chip clickable variant="outlined" label="Mark as seen" icon={<VisibilityIcon />} />*/}
                 <Chip clickable variant="outlined" label="Edit" icon={<VisibilityIcon />} onClick={() => setEdited(item.id)} />
             </Stack>
         </Stack>
     </ListItem>
 }
 
-export default function LaptopsList({ setEdited, edited }) {
+export default function LaptopsList({ setEdited, edited, token, setSeed }) {
 
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -67,6 +67,18 @@ export default function LaptopsList({ setEdited, edited }) {
         setPage(0);
         pageItems.current = [];
     }, [searchTerm]);
+
+    const deleteItem = (itemId) => {
+        fetch(`${API_URL}/laptops-crud/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+        }).then((x) => console.log(x))
+
+        setSeed(Math.random())
+    }
 
     function loadMore() {
         setPage(page+1);
@@ -94,17 +106,17 @@ export default function LaptopsList({ setEdited, edited }) {
         return <><Box mt={5}>
             <Stack
                 direction={{ xs: 'column', sm: 'row' }}
-                justifyContent="center"
+                justifyContent="left"
                 alignItems="center"
                 spacing={1}
             >
                 <TextField id="search" multiline label="search" variant="outlined" onChange={e => setSearchTerm(e.target.value)} />
-                <Chip clickable variant="outlined" label="Deleted" icon={<DeleteIcon />} />
-                <Chip clickable variant="outlined" label="Unseen" icon={<VisibilityIcon />} />
+                {/*<Chip clickable variant="outlined" label="Deleted" icon={<DeleteIcon />} />*/}
+                {/*<Chip clickable variant="outlined" label="Unseen" icon={<VisibilityIcon />} />*/}
             </Stack>
         </Box>
                 <List sx={{ height: "70vh", overflowY:"scroll", overflowX:"hidden" }}>
-                {flatPageItems().map(item => laptop(item, edited, setEdited))}
+                {flatPageItems().map(item => Laptop(item, edited, setEdited, token, deleteItem))}
                 {showMoreButton && <Chip sx={{marginTop:"0.5em"}} clickable variant="filled" label="Load more" icon={<MoreHorizIcon/>} onClick={loadMore} />}
             </List></>
     }

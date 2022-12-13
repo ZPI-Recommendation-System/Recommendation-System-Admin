@@ -4,8 +4,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
-
-import TextField from '@mui/material/TextField';
+import {useState} from "react";
 
 const style = {
   position: 'absolute',
@@ -19,15 +18,20 @@ const style = {
   p: 4,
 };
 
-export default function AllegroKeyModal({allegroURL, returnKey}) {
+export default function AllegroKeyModal({allegroURL}) {
+  const [show, setShow] = useState(true);
+  const handleClose = () => setShow(false);
 
-    const [key, setKey] = React.useState("");
+  const openInNewTab = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <div>
       <Modal
-        open={allegroURL!==null}
-        onClose={()=>returnKey(key)}
+        open={show && allegroURL!==null}
+        show={show}
+        onHide={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -37,14 +41,12 @@ export default function AllegroKeyModal({allegroURL, returnKey}) {
           </Typography>
             <Stack spacing={2}>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Please visit this link and copy the key here
+            Please visit Allegro service, log in and confirm action
           </Typography>
-          <a href={allegroURL} target="blank">
-            {allegroURL}
-          </a>
-          <TextField id="api-key" label="API Key from the link" 
-            value={key} onChange={e=>setKey(e.target.value)} />
-            <Button onClick={()=>returnKey(key)}>Send it</Button>
+          <Button onClick={()=> {
+            openInNewTab(allegroURL)
+            handleClose()
+          }}>Open in new tab</Button>
           </Stack>
         </Box>
       </Modal>

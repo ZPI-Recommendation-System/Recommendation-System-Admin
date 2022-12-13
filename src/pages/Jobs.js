@@ -14,125 +14,165 @@ import AllegroKeyModal from '../AllegroKeyModal';
 import useLoginRedirect from '../useLoginRedirect';
 
 function Jobs({token}) {
-  const [allegroURL, setAllegroURL] = useState(null);
-
   useLoginRedirect(token);
 
-  function returnKey(key) {
-    setAllegroURL(null)
-    fetch(API_URL + "/allegro-url/", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ key: key })
-    })
-  }
+  const [allegroURL, setAllegroURL] = useState(null);
+  const [runningJob, setRunningJob] = useState(undefined);
+
+  let jobs = [new Job("Scraper", "Scrapes data from allegro API", token),
+    new Job("ML Learn", "Train ML model on collected laptops data", token),
+    new Job("ML Label", "Run ML model on missing price values", token),
+    new Job("Clear DB", "Clear the entire database", token)]
 
   return <Box
-    sx={{
-      '& > :not(style)': {
-        m: 1,
-        pl: 2,
-      },
-    }}
-  ><AllegroKeyModal allegroURL={allegroURL} returnKey={returnKey}></AllegroKeyModal>
-    {
-      // rewrite this table to use Job class
-      [new Job("Scraper", "Scrapes data from allegro API"),
-      new Job("ML Learn", "Train ML model on collected laptops data"),
-      new Job("ML Label", "Run ML model on missing price values"),
-      new Job("Clear DB", "Clear the entire database")]
-        .map(job => <JobLine key={job.name} setAllegroURL={setAllegroURL} job={job}></JobLine>)}</Box>;
+      sx={{
+        '& > :not(style)': {
+          m: 1,
+          pl: 2,
+        },
+      }}
+  ><AllegroKeyModal allegroURL={allegroURL}></AllegroKeyModal>
+    {jobs.map((job) => <JobLine setRunningJob={setRunningJob} runningJob={runningJob} setAllegroURL={setAllegroURL} job={job}></JobLine>)}
+  </Box>;
 }
 
-function JobLine({ job, setAllegroURL }) {
-  const [status, setStatus] = useState("");
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log("Checking status")
-      job.status().then(status => {
-        if (status[0] !== undefined && status[0] === "allegro-url") {
-          setAllegroURL(status[1])
-          setStatus("running")
-        } else {
-          setStatus(status)
-        }
-      })
+function JobLine({ setRunningJob, runningJob, job, setAllegroURL }) {
+  const [buttonStatus, setButtonStatus] = useState("loading");
+  const [status, setStatus] = useState(null);
+  const [lastRunStatus, setLastRunStatus] = useState("");
 
-    }, 1000);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      let newStatus = await job.status();
+      if (job.name === "Scraper") {
+        console.log(newStatus)
+      }
+      setStatus(newStatus)
+    }, 5000)
     return () => clearInterval(interval);
   });
+
+  useEffect(() => {
+    if (status === null) {
+      return
+    }
+
+    if (runningJob === undefined) {
+      setRunningJob(null)
+      return;
+    }
+
+    if (status.jobName === "scraper" && status.status === "auth") {
+      setAllegroURL(status.lastPayload.link)
+      return;
+    }
+
+    setLastRunStatus(status.lastRunStatus)
+
+    if (status.status === "running" || status.status === "in_progress") {
+      setRunningJob(job)
+    } else if (runningJob !== null && runningJob.name === job.name && (status.lastRunStatus === "ok" || status.lastRunStatus === "error")) {
+      setRunningJob(null)
+    }
+
+  }, [status])
+
+  useEffect(() => {
+    if (runningJob === undefined) {
+      setButtonStatus("loading")
+    } else if (runningJob === null) {
+      setButtonStatus("")
+    } else if ( runningJob.name !== job.name) {
+      setButtonStatus("another_running")
+    } else if (runningJob.name === job.name) {
+      setButtonStatus("running")
+    }
+  }, [runningJob])
+
+  let button;
+
+   async function start() {
+    setRunningJob(job);
+    setLastRunStatus("")
+    job.start();
+  }
+
+  if (buttonStatus === "loading") {
+    button =
+        <Button disabled variant="outlined" startIcon={<CircularProgress size="0.6em" color="inherit" />}>
+          Loading
+        </Button>
+  }else if (buttonStatus === "running") {
+    button =
+        <Button disabled variant="outlined" startIcon={<CircularProgress size="0.6em" color="inherit" />}>
+          Running
+        </Button>
+  }  else if (buttonStatus === "another_running") {
+    button =
+        <Button disabled variant="outlined" startIcon={<KeyboardDoubleArrowRightIcon />}>
+          Run
+        </Button>
+  } else {
+    button =
+        <Button onClick={start} variant="outlined" startIcon={<KeyboardDoubleArrowRightIcon />}>
+          Run
+        </Button>
+  }
 
   return <Paper variant="outlined" p={1} elevation={0} >
     <Grid alignItems="center" container>
       <Grid xs={8}> <Typography pt={1} variant="h5" component="div">
         {job.name}
-        {status === "failed" &&
-          <Chip color="error" size="small" sx={{ marginLeft: "1em" }} label="Last run failed" variant="outlined" />}
-        {status === "success" &&
-          <Chip color="success" size="small" sx={{ marginLeft: "1em" }} label="Last run succeeded" variant="outlined" />}
+        {lastRunStatus === "error" &&
+            <Chip color="error" size="small" sx={{ marginLeft: "1em" }} label="Last run failed" variant="outlined" />}
+        {lastRunStatus === "ok" &&
+            <Chip color="success" size="small" sx={{ marginLeft: "1em" }} label="Last run succeeded" variant="outlined" />}
       </Typography>
         <Typography component="div" pb={2}>
           {job.description}
         </Typography>
       </Grid>
       <Grid xs={4}>
-        {status === "running"
-          ? <Button onClick={() => job.start()} disabled variant="outlined" startIcon={<CircularProgress size="0.6em" color="inherit" />}>
-            Running
-          </Button>
-          : <Button onClick={() => job.start()} variant="outlined" startIcon={<KeyboardDoubleArrowRightIcon />}>
-            {status ? "Rerun" : "Run"}
-          </Button>
-        }
+        {button}
       </Grid>
     </Grid>
   </Paper>
 }
 
 class Job {
-  constructor(name, description) {
+  constructor(name, description, token) {
     this.name = name;
     this.description = description;
-    this.mockStatus = "";
+    this.token = token;
   }
 
   async status() {
-    await new Promise(r => setTimeout(r, 1000));
-    return this.mockStatus;
-  }
+    const response = await fetch(API_URL + "/jobs/status/" + this.name.toLowerCase().replaceAll(" ", "_"), {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + this.token,
+      },
+    })
 
-  finalMockStatus() {
-    if (this.name === "ML Label") {
-      this.mockStatus = "failed";
-    } else if (this.name === "Scraper") {
-      this.mockStatus = ["allegro-url", "https://allegro.pl/auth/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=redirect_uri"];
-    } else {
-      this.mockStatus = "running";
-    }
+    return await response.json()
   }
 
   start() {
     console.log("Starting job", this.name);
-    fetch(API_URL + "/jobs/" + this.name)
-      .then(res => {
-        if (!res.ok) {
-          // make the promise be rejected if we didn't get a 2xx response
-          throw new Error(`${res.status}: ${res.statusText}`, { cause: res });
-        } else {
-          return res.json()
-        }
+
+    fetch(API_URL + "/jobs/request", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.token,
+      },
+      body: JSON.stringify({
+        'jobName': this.name.toLowerCase().replaceAll(" ", "_"),
+        'payload': {}
       })
-      .then(
-        (result) => {
-          console.log("Job start result", result)
-        },
-        (error) => {
-          console.log("Job start error", error)
-          this.finalMockStatus()
-        }
-      )
+    }).then((response) => {
+      return response.json()
+    })
   }
 }
 
