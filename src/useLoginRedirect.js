@@ -1,12 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import {Redirect} from "react-router-dom";
 import * as React from 'react';
 
 export default function useLoginRedirect(token) {
-    const navigate = useNavigate();
 
-    React.useEffect(() => {
-        if (!token) {
-          navigate('/login');
-        }
-    }, [token, navigate]);
+    if(!token)
+        return <Redirect to={"/login"}/>
+    else
+        return <></>
 }

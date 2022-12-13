@@ -1,16 +1,17 @@
 import Grid from '@mui/material/Unstable_Grid2';
 
 import * as React from 'react';
-import { useState } from 'react';
+import {useState} from 'react';
 import Editor from './Editor';
 import LaptopsList from './LaptopsList';
-import useLoginRedirect from '../../useLoginRedirect';
+import {Redirect} from "react-router-dom";
 
 function Moderate({token}) {
     const [editedId, setEditedId] = useState(null)
     const [seed, setSeed] = useState(1)
 
-    useLoginRedirect(token);
+    if(!token)
+        return <Redirect to={"/login"}/>
 
     return <Grid container spacing={2}>
         <Grid xs={4}>

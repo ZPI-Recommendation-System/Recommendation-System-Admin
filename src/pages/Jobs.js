@@ -4,17 +4,16 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import { API_URL } from '../api.js';
-import { useState, useEffect } from 'react';
+import {API_URL} from '../api.js';
 import AllegroKeyModal from '../AllegroKeyModal';
-import useLoginRedirect from '../useLoginRedirect';
+import {Redirect} from "react-router-dom";
 
 function Jobs({token}) {
-  useLoginRedirect(token);
 
   const [allegroURL, setAllegroURL] = useState(null);
   const [runningJob, setRunningJob] = useState(undefined);
@@ -23,6 +22,9 @@ function Jobs({token}) {
     new Job("ML Learn", "Train ML model on collected laptops data", token),
     new Job("ML Label", "Run ML model on missing price values", token),
     new Job("Clear DB", "Clear the entire database", token)]
+
+  if(!token)
+    return <Redirect to={"/login"}/>
 
   return <Box
       sx={{
