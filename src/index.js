@@ -4,13 +4,21 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { BrowserRouter } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Moderate from "./pages/moderation/Moderate";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
   <BrowserRouter>
-    <App />
+    {/*<App />*/}
+    <Routes>
+      <Route path="/" element={<Moderate />} />
+    {/*<Route index element={<Home />} />*/}
+    {/*<Route path="blogs" element={<Blogs />} />*/}
+    {/*<Route path="contact" element={<Contact />} />*/}
+    {/*<Route path="*" element={<NoPage />} />*/}
+    </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );
