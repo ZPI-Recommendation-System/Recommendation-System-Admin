@@ -38,14 +38,14 @@ function App() {
             Admin Panel
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
-          
-          <MenuItem  component={Link} to="/admin/moderate">
+
+            {token && <MenuItem  component={Link} to="/admin/moderate">
           
                   <Typography  textAlign="center">Moderate Laptops</Typography>
-          </MenuItem>
-          <MenuItem component={Link} to="/admin/jobs">
+          </MenuItem>}
+            {token && <MenuItem component={Link} to="/admin/jobs">
                   <Typography  textAlign="center">Run Jobs</Typography>
-          </MenuItem>
+          </MenuItem>}
           </Stack>
           {token && <MenuItem>
             <Typography textAlign="center" onClick={()=>setToken(null)}>Log Out</Typography>
@@ -54,6 +54,7 @@ function App() {
       </AppBar>
       <Container>
         <Routes>
+          <Route path={"/"} element={ <Login token={token} setToken={setToken} />} />
           <Route path={"/admin"} element={ <Login token={token} setToken={setToken} />} />
           <Route path={"/admin/jobs"} element={ <Jobs token={token} />} />
           <Route path={"/admin/moderate"} element={ <Moderate token={token} />} />
