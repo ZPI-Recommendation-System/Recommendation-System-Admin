@@ -32,7 +32,7 @@ function Jobs({token}) {
         },
       }}
   ><AllegroKeyModal allegroURL={allegroURL}></AllegroKeyModal>
-    {jobs.map((job) => <JobLine setRunningJob={setRunningJob} runningJob={runningJob} setAllegroURL={setAllegroURL} job={job}></JobLine>)}
+    {jobs.map((job) => <JobLine key={job.name} setRunningJob={setRunningJob} runningJob={runningJob} setAllegroURL={setAllegroURL} job={job}></JobLine>)}
   </Box>;
 }
 
