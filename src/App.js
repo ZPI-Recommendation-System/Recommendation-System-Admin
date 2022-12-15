@@ -19,6 +19,7 @@ import Login from './pages/Login';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import {useEffect} from "react";
 
 const darkTheme = createTheme({
   palette: {
@@ -27,7 +28,16 @@ const darkTheme = createTheme({
 });
 
 function App() {
-  const [token, setToken] = React.useState(null);
+  const [token, setToken] = React.useState(window.sessionStorage.getItem("token") ?? "");
+
+  useEffect(() => {
+    setToken(window.sessionStorage.getItem("token"));
+  }, []);
+
+  useEffect(() => {
+    window.sessionStorage.setItem("token", token);
+  }, [token]);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -48,7 +58,10 @@ function App() {
           </MenuItem>}
           </Stack>
           {token && <MenuItem>
-            <Typography textAlign="center" onClick={()=>setToken(null)}>Log Out</Typography>
+            <Typography textAlign="center" onClick={()=>{
+              setToken("");
+              window.sessionStorage.removeItem("token");
+            }}>Log Out</Typography>
           </MenuItem>}
         </Toolbar>
       </AppBar>
