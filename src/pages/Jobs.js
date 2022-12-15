@@ -44,9 +44,6 @@ function JobLine({ setRunningJob, runningJob, job, setAllegroURL }) {
   useEffect(() => {
     const interval = setInterval(async () => {
       let newStatus = await job.status();
-      if (job.name === "Scraper") {
-        console.log(newStatus)
-      }
       setStatus(newStatus)
     }, 5000)
     return () => clearInterval(interval);

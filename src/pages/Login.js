@@ -10,15 +10,15 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login({ token, setToken }) {
     // username and password state
-    const [username, setUsername] = useState("admin");
-    const [password, setPassword] = useState("admin");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
 
     React.useEffect(() => {
         if (token) {
-            navigate('/moderate');
+            navigate('/admin/moderate');
         }
     }, [token, navigate]);
 

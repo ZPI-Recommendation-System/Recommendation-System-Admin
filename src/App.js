@@ -39,32 +39,25 @@ function App() {
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ flexGrow: 1 }}>
           
-          <MenuItem  component={Link} to="/moderate">
+          <MenuItem  component={Link} to="/admin/moderate">
           
                   <Typography  textAlign="center">Moderate Laptops</Typography>
           </MenuItem>
-          <MenuItem component={Link} to="/jobs">
+          <MenuItem component={Link} to="/admin/jobs">
                   <Typography  textAlign="center">Run Jobs</Typography>
           </MenuItem>
           </Stack>
-          {token && <MenuItem >
+          {token && <MenuItem>
             <Typography textAlign="center" onClick={()=>setToken(null)}>Log Out</Typography>
           </MenuItem>}
         </Toolbar>
       </AppBar>
-      <Container >
-
-      <Routes>
-            <Route path={"/"} element={
-              <Login token={token} setToken={setToken} />} />
-              <Route path={"/login"} element={
-                <Login token={token} setToken={setToken} />} />
-            <Route path={"/jobs"} element={
-              <Jobs token={token} />} />
-              <Route path={"/moderate"} element={
-                <Moderate token={token} />} />
+      <Container>
+        <Routes>
+          <Route path={"/admin"} element={ <Login token={token} setToken={setToken} />} />
+          <Route path={"/admin/jobs"} element={ <Jobs token={token} />} />
+          <Route path={"/admin/moderate"} element={ <Moderate token={token} />} />
         </Routes>
-
       </Container>
     </Box>
     </ThemeProvider>

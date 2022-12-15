@@ -5,9 +5,8 @@ export default function useLoginRedirect(token) {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        console.log(!token)
         if (!token) {
-            navigate('/login');
+            navigate('/admin');
         }
     }, [token, navigate]);
 }
